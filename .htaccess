@@ -1,0 +1,65 @@
+# ===========================================================
+# Diones Ateliê — Configuração Apache para hospedagem PHP
+# ===========================================================
+
+# Página inicial padrão
+DirectoryIndex index.html index.php
+
+# Charset padrão
+AddDefaultCharset UTF-8
+
+# ----- Tipos MIME (caso a hospedagem não os reconheça) -----
+<IfModule mod_mime.c>
+  AddType image/png                  .png
+  AddType image/jpeg                 .jpg .jpeg
+  AddType image/svg+xml              .svg
+  AddType image/webp                 .webp
+  AddType image/x-icon               .ico
+  AddType application/manifest+json  .webmanifest
+  AddType application/json           .json
+  AddType font/woff2                 .woff2
+  AddType font/woff                  .woff
+</IfModule>
+
+# ----- Compressão GZIP -----
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml font/woff font/woff2
+</IfModule>
+
+# ----- Cache do navegador -----
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault                              "access plus 1 month"
+  ExpiresByType text/html                     "access plus 0 seconds"
+  ExpiresByType text/css                      "access plus 1 year"
+  ExpiresByType application/javascript        "access plus 1 year"
+  ExpiresByType image/png                     "access plus 1 year"
+  ExpiresByType image/jpeg                    "access plus 1 year"
+  ExpiresByType image/webp                    "access plus 1 year"
+  ExpiresByType image/svg+xml                 "access plus 1 year"
+  ExpiresByType image/x-icon                  "access plus 1 year"
+  ExpiresByType font/woff2                    "access plus 1 year"
+  ExpiresByType application/manifest+json     "access plus 1 week"
+</IfModule>
+
+# Sempre revalidar o HTML (para não cachear versão antiga da página)
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html)$">
+    Header set Cache-Control "no-cache, must-revalidate, max-age=0"
+  </FilesMatch>
+</IfModule>
+
+# ----- Forçar HTTPS (descomente se já tiver certificado SSL) -----
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteCond %{HTTPS} off
+#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
+
+# ----- Bloquear listagem de diretórios -----
+Options -Indexes
+
+# ----- Página de erro -----
+ErrorDocument 404 /index.html
